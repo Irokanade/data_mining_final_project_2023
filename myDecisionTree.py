@@ -23,7 +23,7 @@ class Node():
         # for leaf node
         self.value = value
 
-class DecisionTreeClassifier():
+class MyDecisionTreeClassifier():
     def __init__(self, min_samples_split=2, max_depth=2):
         ''' constructor '''
         
@@ -199,7 +199,7 @@ y = df.iloc[:, -1].values.reshape(-1,1)
 
 x_train, x_test, y_train, y_test = train_test_split(x,y,test_size = 0.2,random_state=0)
 
-mdtc = DecisionTreeClassifier(min_samples_split=3, max_depth=3)
+mdtc = MyDecisionTreeClassifier(min_samples_split=3, max_depth=3)
 mdtc.fit(x_train,y_train)
 
 # accuracies = {}
