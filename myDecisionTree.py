@@ -4,6 +4,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
 
 
 df = pd.read_csv("heart2.csv")
@@ -32,6 +33,16 @@ class DecisionTreeClassifier():
         # stopping conditions
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
+
+    def get_params(self, deep=True):
+        '''Get parameters for this estimator.'''
+        return {'min_samples_split': self.min_samples_split, 'max_depth': self.max_depth}
+
+    def set_params(self, **params):
+        '''Set the parameters of this estimator.'''
+        for parameter, value in params.items():
+            setattr(self, parameter, value)
+        return self
         
     def build_tree(self, dataset, curr_depth=0):
         ''' recursive function to build the tree ''' 
@@ -172,6 +183,12 @@ class DecisionTreeClassifier():
         else:
             return self.make_prediction(x, tree.right)
         
+    def score(self, X, Y):
+        ''' function to compute accuracy '''
+        predictions = self.predict(X)
+        correct_predictions = sum(pred == true_label for pred, true_label in zip(predictions, Y))
+        accuracy = correct_predictions / len(Y)
+        return accuracy
 
 
 # y = df.target.values
@@ -193,3 +210,10 @@ mdtc.fit(x_train,y_train)
 y_pred = mdtc.predict(x_test) 
 from sklearn.metrics import accuracy_score
 print(accuracy_score(y_test, y_pred))
+
+
+# using cross validation
+print('using cross validation')
+accuracy = cross_val_score(mdtc, x, y, cv=10, scoring="accuracy")
+print(accuracy)
+print(accuracy.mean()*100,'%')
