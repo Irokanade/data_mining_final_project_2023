@@ -3,6 +3,7 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 
@@ -200,20 +201,52 @@ y = df.iloc[:, -1].values.reshape(-1,1)
 x_train, x_test, y_train, y_test = train_test_split(x,y,test_size = 0.2,random_state=0)
 
 mdtc = MyDecisionTreeClassifier(min_samples_split=3, max_depth=3)
-mdtc.fit(x_train,y_train)
+# mdtc.fit(x_train,y_train)
 
-# accuracies = {}
-# acc = mdtc.score(x_test,y_test)*100
-# accuracies['Random Forest'] = acc
-# print("My Decision Tree Algorithm Accuracy Score : {:.2f}%".format(acc))
+# # accuracies = {}
+# # acc = mdtc.score(x_test,y_test)*100
+# # accuracies['Random Forest'] = acc
+# # print("My Decision Tree Algorithm Accuracy Score : {:.2f}%".format(acc))
 
-y_pred = mdtc.predict(x_test) 
-from sklearn.metrics import accuracy_score
-print(accuracy_score(y_test, y_pred))
+# y_pred = mdtc.predict(x_test) 
+# from sklearn.metrics import accuracy_score
+# print(accuracy_score(y_test, y_pred))
 
+# Define a range of maximum depth values
+max_depth_values = range(1, 51)
 
-# using cross validation
-print('using cross validation')
-accuracy = cross_val_score(mdtc, x, y, cv=10, scoring="accuracy")
-print(accuracy)
-print(accuracy.mean()*100,'%')
+# Dictionary to store accuracies for different max_depth values
+accuracies = {}
+
+# Iterate over different max_depth values
+for max_depth in max_depth_values:
+    print(f'max depth: {max_depth}')
+    # Create DecisionTreeClassifier with the current max_depth value
+    mdtc = MyDecisionTreeClassifier(max_depth=max_depth)
+    
+    # Perform cross-validation
+    accuracy = cross_val_score(mdtc, x, y, cv=10, scoring="accuracy")
+    
+    # Store the mean accuracy for the current max_depth
+    accuracies[max_depth] = accuracy.mean()
+
+# Find the max_depth value with the highest mean accuracy
+best_max_depth = max(accuracies, key=accuracies.get)
+best_accuracy = accuracies[best_max_depth]
+
+# Print the best max_depth and accuracy
+print(f"Best Max Depth: {best_max_depth}")
+print(f"Corresponding Accuracy: {best_accuracy * 100:.2f}%")
+
+# Plot the results
+plt.plot(max_depth_values, [accuracies[d] for d in max_depth_values], marker='o')
+plt.title('Cross-Validation Accuracy vs. Max Depth')
+plt.xlabel('Max Depth')
+plt.ylabel('Cross-Validation Accuracy')
+plt.show()
+
+# # using cross validation
+# print('using cross validation')
+# accuracy = cross_val_score(mdtc, x, y, cv=10, scoring="accuracy")
+# print(accuracy)
+# print(accuracy.mean()*100,'%')
